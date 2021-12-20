@@ -1,11 +1,14 @@
-package kg.geektech.weatherapp.ui.weather_fragment;
+package kg.geektech.weatherapp.ui.fragments.weather_fragment;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,18 +22,27 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import kg.geektech.weatherapp.R;
 import kg.geektech.weatherapp.databinding.FragmentWeatherBinding;
 
+@AndroidEntryPoint
 public class WeatherFragment extends Fragment {
 
     private FragmentWeatherBinding binding;
     private WeatherViewModel viewModel;
+    private WeatherFragmentArgs args;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         viewModel = new ViewModelProvider(requireActivity()).get(WeatherViewModel.class);
-        viewModel.getWeathers();
+
+        args = WeatherFragmentArgs.fromBundle(getArguments());
+        String cityName = args.getCityName();
+
+        viewModel.getWeathers(cityName);
     }
 
     @Override
@@ -44,11 +56,32 @@ public class WeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getData();
+        initListeners();
+    }
+
+    private void initListeners() {
+        binding.ivBackgroundCorner.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.fragmentContainerView);
+            navController.navigate(R.id.citySelectFragment);
+        });
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().finish();
+            }
+        });
+    }
+
+    private void getData() {
         viewModel.liveData.observe(getViewLifecycleOwner(), resource -> {
             switch (resource.status) {
                 case SUCCESS: {
                     String current_date = getTime(resource.data.getDt(), "EEE, dd MMM yyyy  |  HH:mm:ss", "GMT+6");
                     String loc = resource.data.getName() + ", " + resource.data.getSys().getCountry();
+                    String iconUrl = "https://openweathermap.org/img/wn/" + resource.data.getWeather().get(0).getIcon() + "@2x.png";
+                    String weatherCurrent = resource.data.getWeather().get(0).getMain();
                     String temp = new DecimalFormat("0").format(resource.data.getMain().getTemp());
                     String tempMax = new DecimalFormat("0").format(resource.data.getMain().getTempMax()) + "°C";
                     String tempMin = new DecimalFormat("0").format(resource.data.getMain().getTempMin()) + "°C";
@@ -58,10 +91,11 @@ public class WeatherFragment extends Fragment {
                     String sunset = getTime(resource.data.getSys().getSunset(), "HH:MM", "GMT+6");
                     String sunrise = getTime(resource.data.getSys().getSunrise(), "HH:MM", "GMT+6");
                     Integer d = resource.data.getSys().getSunset() - resource.data.getSys().getSunrise();
-                    String daytime = getTime(d, "HH'h' MM'm'","GMT");
+                    String daytime = getTime(d, "HH'h' MM'm'", "GMT");
 
                     binding.tvDate.setText(current_date);
                     binding.tvLocation.setText(loc);
+                    Glide.with(requireContext()).load(iconUrl).into(binding.ivSunny);
                     binding.tvTemp.setText(temp);
                     binding.tvMaxTemp.setText(tempMax);
                     binding.tvMinTemp.setText(tempMin);
@@ -70,9 +104,7 @@ public class WeatherFragment extends Fragment {
                     binding.tvWindKmH.setText(windSpeed);
                     binding.tvSunsetPm.setText(sunset);
                     binding.tvSunriseAm.setText(sunrise);
-                    binding.tvSunny.setText(resource.data.getWeather().get(0).getMain());
-                    String iconUrl = "https://openweathermap.org/img/wn/" + resource.data.getWeather().get(0).getIcon() + "@2x.png";
-                    Glide.with(requireContext()).load(iconUrl).into(binding.ivSunny);
+                    binding.tvSunny.setText(weatherCurrent);
                     binding.tvDaytimeHM.setText(daytime);
 
                     Toast.makeText(requireActivity(), "SUCCESS", Toast.LENGTH_SHORT).show();
@@ -90,7 +122,7 @@ public class WeatherFragment extends Fragment {
         });
     }
 
-    private String getTime(Integer timeInt, String timeFormat, String gmt){
+    private String getTime(Integer timeInt, String timeFormat, String gmt) {
         long time = timeInt * (long) 1000;
         Date date = new Date(time);
         SimpleDateFormat format = new SimpleDateFormat(timeFormat);

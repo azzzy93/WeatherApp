@@ -8,4 +8,6 @@
     <string name="pressure">Pressure</string>
     <string name="humidity">Humidity</string>
     <string name="c">°C</string>
+    <string name="enter_city">Enter city</string>
+    <string name="send_city">Send City Name</string>
 </resources>
