@@ -32,11 +32,13 @@ public class WeatherFragment extends Fragment {
     private FragmentWeatherBinding binding;
     private WeatherViewModel viewModel;
     private WeatherFragmentArgs args;
+    private Weather5DaysAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        adapter = new Weather5DaysAdapter();
         viewModel = new ViewModelProvider(requireActivity()).get(WeatherViewModel.class);
 
         args = WeatherFragmentArgs.fromBundle(getArguments());
@@ -58,6 +60,29 @@ public class WeatherFragment extends Fragment {
 
         getData();
         initListeners();
+        initRecycler();
+    }
+
+    private void initRecycler() {
+        binding.recycler.setAdapter(adapter);
+
+        viewModel.liveData5.observe(getViewLifecycleOwner(), resource -> {
+            switch (resource.status){
+                case SUCCESS:{
+                    adapter.setList(resource.data.getList());
+                    Toast.makeText(requireActivity(), "SUCCESS RECYCLER", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                case ERROR:{
+                    Toast.makeText(requireActivity(), "ERROR RECYCLER", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                case LOADING:{
+                    Toast.makeText(requireActivity(), "LOADING RECYCLER", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            }
+        });
     }
 
     private void initListeners() {
