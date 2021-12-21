@@ -1,10 +1,8 @@
 package kg.geektech.weatherapp.data.repository;
 
 import androidx.lifecycle.MutableLiveData;
-
 import javax.inject.Inject;
 
-import kg.geektech.weatherapp.App;
 import kg.geektech.weatherapp.common.Resource;
 import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.data.remote.WeatherApi;
@@ -20,7 +18,7 @@ public class MainRepository {
         this.api = api;
     }
 
-    public MutableLiveData<Resource<MyWeather>> getWeather(String cityName){
+    public MutableLiveData<Resource<MyWeather>> getWeather(String cityName) {
 
         MutableLiveData<Resource<MyWeather>> liveData = new MutableLiveData<>();
         liveData.setValue(Resource.loading());
@@ -43,5 +41,4 @@ public class MainRepository {
                 });
         return liveData;
     }
-
 }

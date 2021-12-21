@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import kg.geektech.weatherapp.App;
 import kg.geektech.weatherapp.common.Resource;
 import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.data.repository.MainRepository;
