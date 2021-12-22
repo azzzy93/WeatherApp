@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +63,8 @@ public class Weather5DaysAdapter extends RecyclerView.Adapter<Weather5DaysAdapte
         public void onBind(kg.geektech.weatherapp.data.models.weather_for_5_days.List list) {
             String iconUrl = "https://openweathermap.org/img/wn/" + list.getWeather().get(0).getIcon() + "@2x.png";
             String date = list.getDtTxt();
-            String max = list.getMain().getTempMax() + "°C";
-            String min = list.getMain().getTempMin() + "°C";
+            String max = new DecimalFormat("0").format(list.getMain().getTempMax()) + "°C";
+            String min = new DecimalFormat("0").format(list.getMain().getTempMin()) + "°C";
 
             Glide.with(binding.ivWeather).load(iconUrl).into(binding.ivWeather);
             binding.tvDate.setText(date);

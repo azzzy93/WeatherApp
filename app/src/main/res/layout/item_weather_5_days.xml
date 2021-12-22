@@ -9,8 +9,13 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="@color/blue_text"
-        app:cardCornerRadius="20dp">
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0.2dp"
+        android:elevation="8dp"
+        app:cardCornerRadius="20dp"
+        app:cardPreventCornerOverlap="false">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -27,10 +32,11 @@
 
             <TextView
                 android:id="@+id/tv_date"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/barlow_regular"
+                android:textAlignment="center"
                 android:textColor="@color/dark_grey_text"
                 android:textSize="16sp"
                 android:textStyle="normal"
@@ -43,11 +49,11 @@
                 android:id="@+id/temp_max"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="19dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/barlow_regular"
                 android:textColor="@color/grey_text"
-                android:textSize="11sp"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_date"
                 tools:text="35°C" />
@@ -66,11 +72,11 @@
                 android:id="@+id/temp_min"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="19dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="15dp"
                 android:fontFamily="@font/barlow_regular"
                 android:textColor="@color/grey_text"
-                android:textSize="11sp"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_date"
                 tools:text="30°C" />

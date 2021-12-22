@@ -12,7 +12,7 @@ public class List {
     private Clouds clouds;
     private Wind wind;
     private Integer visibility;
-    private Integer pop;
+    private Double pop;
     private Sys sys;
     @SerializedName("dt_txt")
     @Expose
@@ -66,11 +66,11 @@ public class List {
         this.visibility = visibility;
     }
 
-    public Integer getPop() {
+    public Double getPop() {
         return pop;
     }
 
-    public void setPop(Integer pop) {
+    public void setPop(Double pop) {
         this.pop = pop;
     }
 

@@ -19,11 +19,13 @@ import com.bumptech.glide.Glide;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import kg.geektech.weatherapp.R;
+import kg.geektech.weatherapp.data.models.weather_for_5_days.List;
 import kg.geektech.weatherapp.databinding.FragmentWeatherBinding;
 
 @AndroidEntryPoint
@@ -69,8 +71,8 @@ public class WeatherFragment extends Fragment {
         viewModel.liveData5.observe(getViewLifecycleOwner(), resource -> {
             switch (resource.status){
                 case SUCCESS:{
-                    adapter.setList(resource.data.getList());
                     Toast.makeText(requireActivity(), "SUCCESS RECYCLER", Toast.LENGTH_SHORT).show();
+                    adapter.setList(resource.data.getList());
                     break;
                 }
                 case ERROR:{
