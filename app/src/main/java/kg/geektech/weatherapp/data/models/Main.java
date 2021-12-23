@@ -1,6 +1,5 @@
 
 package kg.geektech.weatherapp.data.models;
-
 import com.google.gson.annotations.SerializedName;
 
 public class Main {
@@ -18,6 +17,21 @@ public class Main {
     private Integer seaLevel;
     @SerializedName("grnd_level")
     private Integer grndLevel;
+
+    public Main(Double temp, Double feelsLike, Double tempMin, Double tempMax, Integer pressure,
+                Integer humidity, Integer seaLevel, Integer grndLevel) {
+        this.temp = temp;
+        this.feelsLike = feelsLike;
+        this.tempMin = tempMin;
+        this.tempMax = tempMax;
+        this.pressure = pressure;
+        this.humidity = humidity;
+        this.seaLevel = seaLevel;
+        this.grndLevel = grndLevel;
+    }
+
+    public Main() {
+    }
 
     public Double getTemp() {
         return temp;

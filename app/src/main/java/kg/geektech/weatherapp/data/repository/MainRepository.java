@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import javax.inject.Inject;
 
 import kg.geektech.weatherapp.common.Resource;
+import kg.geektech.weatherapp.data.local.room.AppDatabase;
 import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.data.models.weather_for_5_days.MainWeather5;
 import kg.geektech.weatherapp.data.remote.WeatherApi;
@@ -31,6 +32,7 @@ public class MainRepository {
                     public void onResponse(Call<MyWeather> call, Response<MyWeather> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
+
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));
                         }
@@ -54,6 +56,7 @@ public class MainRepository {
                     public void onResponse(Call<MainWeather5> call, Response<MainWeather5> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
+
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));
                         }

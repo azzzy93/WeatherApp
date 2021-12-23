@@ -1,11 +1,17 @@
 package kg.geektech.weatherapp.di;
 
+import android.content.Context;
+
+import androidx.room.Room;
+
 import java.util.concurrent.TimeUnit;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import kg.geektech.weatherapp.data.local.room.AppDatabase;
 import kg.geektech.weatherapp.data.remote.WeatherApi;
 import kg.geektech.weatherapp.data.repository.MainRepository;
 import okhttp3.Interceptor;
@@ -51,5 +57,12 @@ public abstract class AppModule {
     public static Interceptor provideLoggingInterceptor(){
         return new HttpLoggingInterceptor()
                 .setLevel(HttpLoggingInterceptor.Level.BODY);
+    }
+
+    @Provides
+    public static AppDatabase provideAppDatabase(@ApplicationContext Context context){
+        return Room.databaseBuilder(context, AppDatabase.class, "database")
+                .allowMainThreadQueries()
+                .build();
     }
 }

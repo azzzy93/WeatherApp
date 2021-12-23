@@ -1,5 +1,11 @@
 package kg.geektech.weatherapp.ui.fragments.weather_fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -19,13 +25,15 @@ import com.bumptech.glide.Glide;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 import kg.geektech.weatherapp.R;
-import kg.geektech.weatherapp.data.models.weather_for_5_days.List;
+import kg.geektech.weatherapp.data.local.room.AppDatabase;
+import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.databinding.FragmentWeatherBinding;
 
 @AndroidEntryPoint
@@ -35,6 +43,9 @@ public class WeatherFragment extends Fragment {
     private WeatherViewModel viewModel;
     private WeatherFragmentArgs args;
     private Weather5DaysAdapter adapter;
+    private BroadcastReceiver receiver;
+    @Inject
+    AppDatabase appDatabase;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,31 +71,50 @@ public class WeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getData();
+        getBroadcastReceiver();
         initListeners();
-        initRecycler();
     }
 
-    private void initRecycler() {
-        binding.recycler.setAdapter(adapter);
-
-        viewModel.liveData5.observe(getViewLifecycleOwner(), resource -> {
-            switch (resource.status){
-                case SUCCESS:{
-                    Toast.makeText(requireActivity(), "SUCCESS RECYCLER", Toast.LENGTH_SHORT).show();
-                    adapter.setList(resource.data.getList());
-                    break;
-                }
-                case ERROR:{
-                    Toast.makeText(requireActivity(), "ERROR RECYCLER", Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                case LOADING:{
-                    Toast.makeText(requireActivity(), "LOADING RECYCLER", Toast.LENGTH_SHORT).show();
-                    break;
+    private void getBroadcastReceiver() {
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                try {
+                    if (isOnline(context)) {
+                        dialog(true);
+                    } else {
+                        dialog(false);
+                    }
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
                 }
             }
-        });
+        };
+        requireActivity().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    private void dialog(boolean b) {
+        binding.recycler.setAdapter(adapter);
+
+        if (b) {
+            Toast.makeText(requireContext(), "Интернет подключен", Toast.LENGTH_SHORT).show();
+            getData();
+        } else {
+            Toast.makeText(requireContext(), "Интернет отключен", Toast.LENGTH_SHORT).show();
+            adapter.setList(appDatabase.mainWeather5Dao().getMainWeather5().getList());
+            setDataView(appDatabase.myWeatherDao().getMainWeather5());
+        }
+    }
+
+    private boolean isOnline(Context context) {
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            return (networkInfo != null && networkInfo.isConnected());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void initListeners() {
@@ -105,34 +135,13 @@ public class WeatherFragment extends Fragment {
         viewModel.liveData.observe(getViewLifecycleOwner(), resource -> {
             switch (resource.status) {
                 case SUCCESS: {
-                    String current_date = getTime(resource.data.getDt(), "EEE, dd MMM yyyy  |  HH:mm:ss", "GMT+6");
-                    String loc = resource.data.getName() + ", " + resource.data.getSys().getCountry();
-                    String iconUrl = "https://openweathermap.org/img/wn/" + resource.data.getWeather().get(0).getIcon() + "@2x.png";
-                    String weatherCurrent = resource.data.getWeather().get(0).getMain();
-                    String temp = new DecimalFormat("0").format(resource.data.getMain().getTemp());
-                    String tempMax = new DecimalFormat("0").format(resource.data.getMain().getTempMax()) + "°C";
-                    String tempMin = new DecimalFormat("0").format(resource.data.getMain().getTempMin()) + "°C";
-                    String humidity = resource.data.getMain().getHumidity() + "%";
-                    String pressure = resource.data.getMain().getPressure() + "mBar";
-                    String windSpeed = resource.data.getWind().getSpeed() + "m/s";
-                    String sunset = getTime(resource.data.getSys().getSunset(), "HH:MM", "GMT+6");
-                    String sunrise = getTime(resource.data.getSys().getSunrise(), "HH:MM", "GMT+6");
-                    Integer d = resource.data.getSys().getSunset() - resource.data.getSys().getSunrise();
-                    String daytime = getTime(d, "HH'h' MM'm'", "GMT");
+                    setDataView(resource.data);
 
-                    binding.tvDate.setText(current_date);
-                    binding.tvLocation.setText(loc);
-                    Glide.with(requireContext()).load(iconUrl).into(binding.ivSunny);
-                    binding.tvTemp.setText(temp);
-                    binding.tvMaxTemp.setText(tempMax);
-                    binding.tvMinTemp.setText(tempMin);
-                    binding.tvHumidityProc.setText(humidity);
-                    binding.tvPressureMBar.setText(pressure);
-                    binding.tvWindKmH.setText(windSpeed);
-                    binding.tvSunsetPm.setText(sunset);
-                    binding.tvSunriseAm.setText(sunrise);
-                    binding.tvSunny.setText(weatherCurrent);
-                    binding.tvDaytimeHM.setText(daytime);
+                    if (appDatabase.myWeatherDao().getMainWeather5() == null) {
+                        appDatabase.myWeatherDao().insert(resource.data);
+                    } else {
+                        appDatabase.myWeatherDao().update(resource.data);
+                    }
 
                     Toast.makeText(requireActivity(), "SUCCESS", Toast.LENGTH_SHORT).show();
                     break;
@@ -147,6 +156,62 @@ public class WeatherFragment extends Fragment {
                 }
             }
         });
+
+        viewModel.liveData5.observe(getViewLifecycleOwner(), resource -> {
+            switch (resource.status) {
+                case SUCCESS: {
+                    adapter.setList(resource.data.getList());
+
+                    if (appDatabase.mainWeather5Dao().getMainWeather5() == null) {
+                        appDatabase.mainWeather5Dao().insert(resource.data);
+                    } else {
+                        appDatabase.mainWeather5Dao().update(resource.data);
+                    }
+
+                    Toast.makeText(requireActivity(), "SUCCESS RECYCLER", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                case ERROR: {
+                    Toast.makeText(requireActivity(), "ERROR RECYCLER", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                case LOADING: {
+                    Toast.makeText(requireActivity(), "LOADING RECYCLER", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            }
+        });
+    }
+
+    public void setDataView(MyWeather myWeather) {
+        String current_date = getTime(myWeather.getDt(), "EEE, dd MMM yyyy  |  HH:mm:ss", "GMT+6");
+        String loc = myWeather.getName() + ", " + myWeather.getSys().getCountry();
+        String iconUrl = "https://openweathermap.org/img/wn/" + myWeather.getWeather().get(0).getIcon() + "@2x.png";
+        String weatherCurrent = myWeather.getWeather().get(0).getMain();
+        String temp = new DecimalFormat("0").format(myWeather.getMain().getTemp());
+        String tempMax = new DecimalFormat("0").format(myWeather.getMain().getTempMax()) + "°C";
+        String tempMin = new DecimalFormat("0").format(myWeather.getMain().getTempMin()) + "°C";
+        String humidity = myWeather.getMain().getHumidity() + "%";
+        String pressure = myWeather.getMain().getPressure() + "mBar";
+        String windSpeed = myWeather.getWind().getSpeed() + "m/s";
+        String sunset = getTime(myWeather.getSys().getSunset(), "HH:MM", "GMT+6");
+        String sunrise = getTime(myWeather.getSys().getSunrise(), "HH:MM", "GMT+6");
+        Integer d = myWeather.getSys().getSunset() - myWeather.getSys().getSunrise();
+        String daytime = getTime(d, "HH'h' MM'm'", "GMT");
+
+        binding.tvDate.setText(current_date);
+        binding.tvLocation.setText(loc);
+        Glide.with(requireContext()).load(iconUrl).into(binding.ivSunny);
+        binding.tvTemp.setText(temp);
+        binding.tvMaxTemp.setText(tempMax);
+        binding.tvMinTemp.setText(tempMin);
+        binding.tvHumidityProc.setText(humidity);
+        binding.tvPressureMBar.setText(pressure);
+        binding.tvWindKmH.setText(windSpeed);
+        binding.tvSunsetPm.setText(sunset);
+        binding.tvSunriseAm.setText(sunrise);
+        binding.tvSunny.setText(weatherCurrent);
+        binding.tvDaytimeHM.setText(daytime);
     }
 
     private String getTime(Integer timeInt, String timeFormat, String gmt) {
@@ -155,5 +220,20 @@ public class WeatherFragment extends Fragment {
         SimpleDateFormat format = new SimpleDateFormat(timeFormat);
         format.setTimeZone(TimeZone.getTimeZone(gmt));
         return format.format(date);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+        unRegisterNetwork();
+    }
+
+    private void unRegisterNetwork() {
+        try {
+            requireActivity().unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 }

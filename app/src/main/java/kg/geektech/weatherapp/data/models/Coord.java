@@ -1,11 +1,18 @@
 
 package kg.geektech.weatherapp.data.models;
 
-
 public class Coord {
 
     private Double lon;
     private Double lat;
+
+    public Coord(Double lon, Double lat) {
+        this.lon = lon;
+        this.lat = lat;
+    }
+
+    public Coord() {
+    }
 
     public Double getLon() {
         return lon;

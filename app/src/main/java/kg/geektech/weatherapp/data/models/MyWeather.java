@@ -1,23 +1,62 @@
 
 package kg.geektech.weatherapp.data.models;
 
+
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
+@Entity
 public class MyWeather {
 
+    @PrimaryKey(autoGenerate = true)
+    private long idRoom;
+
+    @Embedded
     private Coord coord;
     private List<Weather> weather = null;
     private String base;
+    @Embedded
     private Main main;
     private Integer visibility;
+    @Embedded
     private Wind wind;
+    @Embedded
     private Clouds clouds;
     private Integer dt;
+    @Embedded
     private Sys sys;
     private Integer timezone;
-    private Integer id;
+    @SerializedName("id")
+    private Integer idMyWeather;
     private String name;
     private Integer cod;
+
+    public MyWeather(long idRoom, Coord coord, List<Weather> weather, String base, Main main,
+                     Integer visibility, Wind wind, Clouds clouds, Integer dt, Sys sys, Integer timezone,
+                     Integer idMyWeather, String name, Integer cod) {
+        this.idRoom = idRoom;
+        this.coord = coord;
+        this.weather = weather;
+        this.base = base;
+        this.main = main;
+        this.visibility = visibility;
+        this.wind = wind;
+        this.clouds = clouds;
+        this.dt = dt;
+        this.sys = sys;
+        this.timezone = timezone;
+        this.idMyWeather = idMyWeather;
+        this.name = name;
+        this.cod = cod;
+    }
+
+    public MyWeather() {
+    }
 
     public Coord getCoord() {
         return coord;
@@ -99,12 +138,12 @@ public class MyWeather {
         this.timezone = timezone;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getIdMyWeather() {
+        return idMyWeather;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setIdMyWeather(Integer idMyWeather) {
+        this.idMyWeather = idMyWeather;
     }
 
     public String getName() {
@@ -123,4 +162,11 @@ public class MyWeather {
         this.cod = cod;
     }
 
+    public long getIdRoom() {
+        return idRoom;
+    }
+
+    public void setIdRoom(long idRoom) {
+        this.idRoom = idRoom;
+    }
 }

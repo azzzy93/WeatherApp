@@ -1,9 +1,17 @@
 
 package kg.geektech.weatherapp.data.models.weather_for_5_days;
 
+
 public class Clouds {
 
     private Integer all;
+
+    public Clouds(Integer all) {
+        this.all = all;
+    }
+
+    public Clouds() {
+    }
 
     public Integer getAll() {
         return all;

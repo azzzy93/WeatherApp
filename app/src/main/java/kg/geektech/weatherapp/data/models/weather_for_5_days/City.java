@@ -1,10 +1,17 @@
 
 package kg.geektech.weatherapp.data.models.weather_for_5_days;
 
+
+import androidx.room.Embedded;
+
+import com.google.gson.annotations.SerializedName;
+
 public class City {
 
-    private Integer id;
+    @SerializedName("id")
+    private Integer idCity;
     private String name;
+    @Embedded
     private Coord coord;
     private String country;
     private Integer population;
@@ -12,12 +19,27 @@ public class City {
     private Integer sunrise;
     private Integer sunset;
 
-    public Integer getId() {
-        return id;
+    public City(Integer id, String name, Coord coord, String country,
+                Integer population, Integer timezone, Integer sunrise, Integer sunset) {
+        this.idCity = id;
+        this.name = name;
+        this.coord = coord;
+        this.country = country;
+        this.population = population;
+        this.timezone = timezone;
+        this.sunrise = sunrise;
+        this.sunset = sunset;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public City() {
+    }
+
+    public Integer getIdCity() {
+        return idCity;
+    }
+
+    public void setIdCity(Integer idCity) {
+        this.idCity = idCity;
     }
 
     public String getName() {

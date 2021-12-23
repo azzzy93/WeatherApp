@@ -1,13 +1,33 @@
 
 package kg.geektech.weatherapp.data.models.weather_for_5_days;
 
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class MainWeather5 {
 
+    @PrimaryKey(autoGenerate = true)
+    private long idRoom;
     private String cod;
     private Integer message;
     private Integer cnt;
     private java.util.List<List> list = null;
+    @Embedded
     private City city;
+
+    public MainWeather5(long idRoom, String cod, Integer message, Integer cnt, java.util.List<List> list, City city) {
+        this.idRoom = idRoom;
+        this.cod = cod;
+        this.message = message;
+        this.cnt = cnt;
+        this.list = list;
+        this.city = city;
+    }
+
+    public MainWeather5() {
+    }
 
     public String getCod() {
         return cod;
@@ -49,4 +69,11 @@ public class MainWeather5 {
         this.city = city;
     }
 
+    public long getIdRoom() {
+        return idRoom;
+    }
+
+    public void setIdRoom(long idRoom) {
+        this.idRoom = idRoom;
+    }
 }

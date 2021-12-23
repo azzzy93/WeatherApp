@@ -7,6 +7,14 @@ public class Wind {
     private Integer deg;
     private Double gust;
 
+    public Wind(Double speed, Integer deg, Double gust) {
+        this.speed = speed;
+        this.deg = deg;
+        this.gust = gust;
+    }
+
+
+
     public Double getSpeed() {
         return speed;
     }
