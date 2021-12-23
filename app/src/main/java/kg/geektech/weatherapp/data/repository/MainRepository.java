@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import kg.geektech.weatherapp.common.Resource;
 import kg.geektech.weatherapp.data.local.room.AppDatabase;
+import kg.geektech.weatherapp.data.local.room.MainWeather5Dao;
+import kg.geektech.weatherapp.data.local.room.MyWeatherDao;
 import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.data.models.weather_for_5_days.MainWeather5;
 import kg.geektech.weatherapp.data.remote.WeatherApi;
@@ -15,10 +17,14 @@ import retrofit2.Response;
 
 public class MainRepository {
     private WeatherApi api;
+    private MyWeatherDao myWeatherDao;
+    private MainWeather5Dao mainWeather5Dao;
 
     @Inject
-    public MainRepository(WeatherApi api) {
+    public MainRepository(WeatherApi api, MyWeatherDao myWeatherDao, MainWeather5Dao mainWeather5Dao) {
         this.api = api;
+        this.myWeatherDao = myWeatherDao;
+        this.mainWeather5Dao = mainWeather5Dao;
     }
 
     public MutableLiveData<Resource<MyWeather>> getWeather(String cityName) {
@@ -32,6 +38,12 @@ public class MainRepository {
                     public void onResponse(Call<MyWeather> call, Response<MyWeather> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
+
+                            if (myWeatherDao.getMyWeather() == null) {
+                                myWeatherDao.insert(response.body());
+                            } else {
+                                myWeatherDao.update(response.body());
+                            }
 
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));
@@ -56,6 +68,12 @@ public class MainRepository {
                     public void onResponse(Call<MainWeather5> call, Response<MainWeather5> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
+
+                            if (mainWeather5Dao.getMainWeather5() == null) {
+                                mainWeather5Dao.insert(response.body());
+                            } else {
+                                mainWeather5Dao.update(response.body());
+                            }
 
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));

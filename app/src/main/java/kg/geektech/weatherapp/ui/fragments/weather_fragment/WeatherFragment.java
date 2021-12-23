@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import kg.geektech.weatherapp.R;
 import kg.geektech.weatherapp.data.local.room.AppDatabase;
+import kg.geektech.weatherapp.data.local.room.MainWeather5Dao;
+import kg.geektech.weatherapp.data.local.room.MyWeatherDao;
 import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.databinding.FragmentWeatherBinding;
 
@@ -45,7 +47,9 @@ public class WeatherFragment extends Fragment {
     private Weather5DaysAdapter adapter;
     private BroadcastReceiver receiver;
     @Inject
-    AppDatabase appDatabase;
+    MyWeatherDao myWeatherDao;
+    @Inject
+    MainWeather5Dao mainWeather5Dao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,8 +105,8 @@ public class WeatherFragment extends Fragment {
             getData();
         } else {
             Toast.makeText(requireContext(), "Интернет отключен", Toast.LENGTH_SHORT).show();
-            adapter.setList(appDatabase.mainWeather5Dao().getMainWeather5().getList());
-            setDataView(appDatabase.myWeatherDao().getMainWeather5());
+            adapter.setList(mainWeather5Dao.getMainWeather5().getList());
+            setDataView(myWeatherDao.getMyWeather());
         }
     }
 
@@ -137,11 +141,7 @@ public class WeatherFragment extends Fragment {
                 case SUCCESS: {
                     setDataView(resource.data);
 
-                    if (appDatabase.myWeatherDao().getMainWeather5() == null) {
-                        appDatabase.myWeatherDao().insert(resource.data);
-                    } else {
-                        appDatabase.myWeatherDao().update(resource.data);
-                    }
+
 
                     Toast.makeText(requireActivity(), "SUCCESS", Toast.LENGTH_SHORT).show();
                     break;
@@ -162,11 +162,7 @@ public class WeatherFragment extends Fragment {
                 case SUCCESS: {
                     adapter.setList(resource.data.getList());
 
-                    if (appDatabase.mainWeather5Dao().getMainWeather5() == null) {
-                        appDatabase.mainWeather5Dao().insert(resource.data);
-                    } else {
-                        appDatabase.mainWeather5Dao().update(resource.data);
-                    }
+
 
                     Toast.makeText(requireActivity(), "SUCCESS RECYCLER", Toast.LENGTH_SHORT).show();
                     break;

@@ -12,6 +12,8 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import kg.geektech.weatherapp.data.local.room.AppDatabase;
+import kg.geektech.weatherapp.data.local.room.MainWeather5Dao;
+import kg.geektech.weatherapp.data.local.room.MyWeatherDao;
 import kg.geektech.weatherapp.data.remote.WeatherApi;
 import kg.geektech.weatherapp.data.repository.MainRepository;
 import okhttp3.Interceptor;
@@ -25,8 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public abstract class AppModule {
 
     @Provides
-    public static MainRepository provideManiRepository(WeatherApi api){
-        return new MainRepository(api);
+    public static MainRepository provideManiRepository(WeatherApi api,
+                                                       MyWeatherDao myWeatherDao,
+                                                       MainWeather5Dao mainWeather5Dao){
+        return new MainRepository(api, myWeatherDao, mainWeather5Dao);
     }
 
     @Provides
@@ -63,6 +67,17 @@ public abstract class AppModule {
     public static AppDatabase provideAppDatabase(@ApplicationContext Context context){
         return Room.databaseBuilder(context, AppDatabase.class, "database")
                 .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
                 .build();
+    }
+
+    @Provides
+    public static MyWeatherDao provideMyWeatherDao(AppDatabase appDatabase){
+        return appDatabase.myWeatherDao();
+    }
+
+    @Provides
+    public static MainWeather5Dao provideMainWeather5Dao(AppDatabase appDatabase){
+        return appDatabase.mainWeather5Dao();
     }
 }
