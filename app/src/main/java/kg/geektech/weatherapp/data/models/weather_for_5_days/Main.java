@@ -8,38 +8,19 @@ public class Main {
 
     private Double temp;
     @SerializedName("feels_like")
-    @Expose
     private Double feelsLike;
     @SerializedName("temp_min")
-    @Expose
     private Double tempMin;
     @SerializedName("temp_max")
-    @Expose
     private Double tempMax;
     private Integer pressure;
     @SerializedName("sea_level")
-    @Expose
     private Integer seaLevel;
     @SerializedName("grnd_level")
-    @Expose
     private Integer grndLevel;
     private Integer humidity;
     @SerializedName("temp_kf")
-    @Expose
     private Double tempKf;
-
-    public Main(Double temp, Double feelsLike, Double tempMin, Double tempMax, Integer pressure,
-                Integer seaLevel, Integer grndLevel, Integer humidity, Double tempKf) {
-        this.temp = temp;
-        this.feelsLike = feelsLike;
-        this.tempMin = tempMin;
-        this.tempMax = tempMax;
-        this.pressure = pressure;
-        this.seaLevel = seaLevel;
-        this.grndLevel = grndLevel;
-        this.humidity = humidity;
-        this.tempKf = tempKf;
-    }
 
     public Main() {
     }

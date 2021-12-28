@@ -39,11 +39,7 @@ public class MainRepository {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
 
-                            if (myWeatherDao.getMyWeather() == null) {
-                                myWeatherDao.insert(response.body());
-                            } else {
-                                myWeatherDao.update(response.body());
-                            }
+                            myWeatherDao.insert(response.body());
 
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));
@@ -69,11 +65,7 @@ public class MainRepository {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
 
-                            if (mainWeather5Dao.getMainWeather5() == null) {
-                                mainWeather5Dao.insert(response.body());
-                            } else {
-                                mainWeather5Dao.update(response.body());
-                            }
+                            mainWeather5Dao.insert(response.body());
 
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));

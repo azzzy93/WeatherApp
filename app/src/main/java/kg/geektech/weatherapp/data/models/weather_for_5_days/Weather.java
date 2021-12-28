@@ -1,32 +1,22 @@
 
 package kg.geektech.weatherapp.data.models.weather_for_5_days;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Weather {
 
-    @SerializedName("id")
-    private Integer idWeather;
+    private Integer id;
     private String main;
     private String description;
     private String icon;
 
-    public Weather(Integer id, String main, String description, String icon) {
-        this.idWeather = id;
-        this.main = main;
-        this.description = description;
-        this.icon = icon;
-    }
-
     public Weather() {
     }
 
-    public Integer getIdWeather() {
-        return idWeather;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdWeather(Integer idWeather) {
-        this.idWeather = idWeather;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getMain() {

@@ -67,7 +67,6 @@ public abstract class AppModule {
     public static AppDatabase provideAppDatabase(@ApplicationContext Context context){
         return Room.databaseBuilder(context, AppDatabase.class, "database")
                 .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
                 .build();
     }
 

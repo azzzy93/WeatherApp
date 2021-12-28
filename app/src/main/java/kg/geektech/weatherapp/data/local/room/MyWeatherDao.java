@@ -14,9 +14,6 @@ public interface MyWeatherDao {
     @Query("SELECT * FROM myWeather")
     MyWeather getMyWeather();
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(MyWeather myWeather);
-
-    @Update
-    void update(MyWeather myWeather);
 }

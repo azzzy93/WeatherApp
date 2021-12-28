@@ -1,41 +1,33 @@
 
 package kg.geektech.weatherapp.data.models.weather_for_5_days;
 
-import androidx.room.Embedded;
+import androidx.room.TypeConverters;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.CloudsConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.MainConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.SysConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.WeatherConverter;
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.WindConvertor;
 
 public class List {
 
     private Integer dt;
-    @Embedded
+    @TypeConverters({MainConvertor.class})
     private Main main;
+    @TypeConverters({WeatherConverter.class})
     private java.util.List<Weather> weather = null;
-    @Embedded
+    @TypeConverters({CloudsConvertor.class})
     private Clouds clouds;
-    @Embedded
+    @TypeConverters({WindConvertor.class})
     private Wind wind;
     private Integer visibility;
     private Double pop;
-    @Embedded
+    @TypeConverters({SysConvertor.class})
     private Sys sys;
     @SerializedName("dt_txt")
-    @Expose
     private String dtTxt;
-
-    public List(Integer dt, Main main, java.util.List<Weather> weather, Clouds clouds,
-                Wind wind, Integer visibility, Double pop, Sys sys, String dtTxt) {
-        this.dt = dt;
-        this.main = main;
-        this.weather = weather;
-        this.clouds = clouds;
-        this.wind = wind;
-        this.visibility = visibility;
-        this.pop = pop;
-        this.sys = sys;
-        this.dtTxt = dtTxt;
-    }
 
     public List() {
     }

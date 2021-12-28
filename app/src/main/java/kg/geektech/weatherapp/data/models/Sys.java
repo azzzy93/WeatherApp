@@ -1,24 +1,13 @@
 
 package kg.geektech.weatherapp.data.models;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Sys {
 
     private Integer type;
-    @SerializedName("id")
-    private Integer idSys;
+    private Integer id;
     private String country;
     private Integer sunrise;
     private Integer sunset;
-
-    public Sys(Integer type, Integer id, String country, Integer sunrise, Integer sunset) {
-        this.type = type;
-        this.idSys = id;
-        this.country = country;
-        this.sunrise = sunrise;
-        this.sunset = sunset;
-    }
 
     public Sys() {
     }
@@ -31,12 +20,12 @@ public class Sys {
         this.type = type;
     }
 
-    public Integer getIdSys() {
-        return idSys;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdSys(Integer idSys) {
-        this.idSys = idSys;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getCountry() {

@@ -2,58 +2,42 @@
 package kg.geektech.weatherapp.data.models;
 
 
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import com.google.gson.annotations.SerializedName;
+import androidx.room.TypeConverters;
 
 import java.util.List;
+
+import kg.geektech.weatherapp.data.local.room.convertors.weather.CloudsConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather.CoordConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather.MainConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather.SysConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather.WeatherConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather.WindConvertor;
 
 @Entity
 public class MyWeather {
 
-    @PrimaryKey(autoGenerate = true)
-    private long idRoom;
-
-    @Embedded
+    @TypeConverters({CoordConvertor.class})
     private Coord coord;
+    @TypeConverters({WeatherConvertor.class})
     private List<Weather> weather = null;
     private String base;
-    @Embedded
+    @TypeConverters({MainConvertor.class})
     private Main main;
     private Integer visibility;
-    @Embedded
+    @TypeConverters({WindConvertor.class})
     private Wind wind;
-    @Embedded
+    @TypeConverters({CloudsConvertor.class})
     private Clouds clouds;
     private Integer dt;
-    @Embedded
+    @TypeConverters({SysConvertor.class})
     private Sys sys;
     private Integer timezone;
-    @SerializedName("id")
-    private Integer idMyWeather;
+    @PrimaryKey
+    private Integer id;
     private String name;
     private Integer cod;
-
-    public MyWeather(long idRoom, Coord coord, List<Weather> weather, String base, Main main,
-                     Integer visibility, Wind wind, Clouds clouds, Integer dt, Sys sys, Integer timezone,
-                     Integer idMyWeather, String name, Integer cod) {
-        this.idRoom = idRoom;
-        this.coord = coord;
-        this.weather = weather;
-        this.base = base;
-        this.main = main;
-        this.visibility = visibility;
-        this.wind = wind;
-        this.clouds = clouds;
-        this.dt = dt;
-        this.sys = sys;
-        this.timezone = timezone;
-        this.idMyWeather = idMyWeather;
-        this.name = name;
-        this.cod = cod;
-    }
 
     public MyWeather() {
     }
@@ -138,12 +122,12 @@ public class MyWeather {
         this.timezone = timezone;
     }
 
-    public Integer getIdMyWeather() {
-        return idMyWeather;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdMyWeather(Integer idMyWeather) {
-        this.idMyWeather = idMyWeather;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -160,13 +144,5 @@ public class MyWeather {
 
     public void setCod(Integer cod) {
         this.cod = cod;
-    }
-
-    public long getIdRoom() {
-        return idRoom;
-    }
-
-    public void setIdRoom(long idRoom) {
-        this.idRoom = idRoom;
     }
 }

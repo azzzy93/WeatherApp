@@ -1,9 +1,12 @@
 
 package kg.geektech.weatherapp.data.models.weather_for_5_days;
 
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.CityConvertor;
+import kg.geektech.weatherapp.data.local.room.convertors.weather5.ListConverter;
 
 @Entity
 public class MainWeather5 {
@@ -13,18 +16,10 @@ public class MainWeather5 {
     private String cod;
     private Integer message;
     private Integer cnt;
+    @TypeConverters({ListConverter.class})
     private java.util.List<List> list = null;
-    @Embedded
+    @TypeConverters({CityConvertor.class})
     private City city;
-
-    public MainWeather5(long idRoom, String cod, Integer message, Integer cnt, java.util.List<List> list, City city) {
-        this.idRoom = idRoom;
-        this.cod = cod;
-        this.message = message;
-        this.cnt = cnt;
-        this.list = list;
-        this.city = city;
-    }
 
     public MainWeather5() {
     }

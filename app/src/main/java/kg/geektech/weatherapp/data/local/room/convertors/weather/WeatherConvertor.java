@@ -1,4 +1,4 @@
-package kg.geektech.weatherapp.data.local.room;
+package kg.geektech.weatherapp.data.local.room.convertors.weather;
 
 import androidx.room.TypeConverter;
 
@@ -10,17 +10,25 @@ import java.util.List;
 
 import kg.geektech.weatherapp.data.models.Weather;
 
-public class WeatherConverter {
+
+public class WeatherConvertor {
 
     @TypeConverter
     public static List<Weather> toList(String value){
+        if (value == null){
+            return null;
+        }
         Type listType = new TypeToken<List<Weather>>(){}.getType();
         return new Gson().fromJson(value, listType);
     }
 
     @TypeConverter
     public static String toString(List<Weather> list){
+        if (list == null){
+            return null;
+        }
         Gson gson = new Gson();
         return gson.toJson(list);
     }
+
 }

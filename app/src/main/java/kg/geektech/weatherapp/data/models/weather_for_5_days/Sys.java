@@ -5,10 +5,6 @@ public class Sys {
 
     private String pod;
 
-    public Sys(String pod) {
-        this.pod = pod;
-    }
-
     public Sys() {
     }
 
