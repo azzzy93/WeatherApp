@@ -1,9 +1,14 @@
 package kg.geektech.weatherapp.ui.fragments.weather_fragment;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,11 +16,13 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,17 +46,21 @@ import kg.geektech.weatherapp.data.models.MyWeather;
 import kg.geektech.weatherapp.databinding.FragmentWeatherBinding;
 
 @AndroidEntryPoint
-public class WeatherFragment extends Fragment {
+public class WeatherFragment extends Fragment implements LocationListener {
 
     private FragmentWeatherBinding binding;
     private WeatherViewModel viewModel;
-    private WeatherFragmentArgs args;
     private Weather5DaysAdapter adapter;
     private BroadcastReceiver receiver;
     @Inject
     MyWeatherDao myWeatherDao;
     @Inject
     MainWeather5Dao mainWeather5Dao;
+    private final String[] PERMS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+    private LocationManager locationManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,10 +69,44 @@ public class WeatherFragment extends Fragment {
         adapter = new Weather5DaysAdapter();
         viewModel = new ViewModelProvider(requireActivity()).get(WeatherViewModel.class);
 
-        args = WeatherFragmentArgs.fromBundle(getArguments());
-        String cityName = args.getCityName();
+        locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+        ActivityCompat.requestPermissions(requireActivity(), PERMS, 1);
+        getCurrentLocation();
 
-        viewModel.getWeathers(cityName);
+
+        if (getArguments() != null) {
+            Bundle bundle = getArguments();
+            Double lat = bundle.getDouble("keyLat");
+            Double lon = bundle.getDouble("keyLon");
+            viewModel.getWeathers(lat, lon);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation();
+            } else {
+                ActivityCompat.requestPermissions(requireActivity(), PERMS, 1);
+            }
+        }
+    }
+
+    private void getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER,
+                    1000, 0, this
+            );
+        }
     }
 
     @Override
@@ -140,9 +185,6 @@ public class WeatherFragment extends Fragment {
             switch (resource.status) {
                 case SUCCESS: {
                     setDataView(resource.data);
-
-
-
                     Toast.makeText(requireActivity(), "SUCCESS", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -161,9 +203,6 @@ public class WeatherFragment extends Fragment {
             switch (resource.status) {
                 case SUCCESS: {
                     adapter.setList(resource.data.getList());
-
-
-
                     Toast.makeText(requireActivity(), "SUCCESS RECYCLER", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -230,6 +269,16 @@ public class WeatherFragment extends Fragment {
             requireActivity().unregisterReceiver(receiver);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Log.e("aziz", "Lat: " + location.getLatitude() + "\nLong : " + location.getLongitude());
+
+        if (getArguments() == null) {
+            viewModel.getWeathers(location.getLatitude(), location.getLongitude());
+            getBroadcastReceiver();
         }
     }
 }

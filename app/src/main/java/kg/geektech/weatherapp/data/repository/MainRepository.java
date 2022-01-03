@@ -27,12 +27,12 @@ public class MainRepository {
         this.mainWeather5Dao = mainWeather5Dao;
     }
 
-    public MutableLiveData<Resource<MyWeather>> getWeather(String cityName) {
+    public MutableLiveData<Resource<MyWeather>> getWeather(Double lat, Double lon) {
 
         MutableLiveData<Resource<MyWeather>> liveData = new MutableLiveData<>();
         liveData.setValue(Resource.loading());
 
-        api.getWeather(cityName, "f4af812615b15d2cb4ba8658893087f7", "metric")
+        api.getWeather(lat, lon, "f4af812615b15d2cb4ba8658893087f7", "metric")
                 .enqueue(new Callback<MyWeather>() {
                     @Override
                     public void onResponse(Call<MyWeather> call, Response<MyWeather> response) {
@@ -54,11 +54,11 @@ public class MainRepository {
         return liveData;
     }
 
-    public MutableLiveData<Resource<MainWeather5>> getWeather5(String cityName) {
+    public MutableLiveData<Resource<MainWeather5>> getWeather5(Double lat, Double lon) {
         MutableLiveData<Resource<MainWeather5>> liveData = new MutableLiveData<>();
         liveData.setValue(Resource.loading());
 
-        api.getWeather5(cityName, "f4af812615b15d2cb4ba8658893087f7", "metric")
+        api.getWeather5(lat, lon, "f4af812615b15d2cb4ba8658893087f7", "metric")
                 .enqueue(new Callback<MainWeather5>() {
                     @Override
                     public void onResponse(Call<MainWeather5> call, Response<MainWeather5> response) {
