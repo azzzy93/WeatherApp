@@ -18,6 +18,8 @@ import kg.geektech.weatherapp.data.local.room.convertors.weather.WindConvertor;
 @Entity
 public class MyWeather {
 
+    @PrimaryKey
+    private long idRoom;
     @TypeConverters({CoordConvertor.class})
     private Coord coord;
     @TypeConverters({WeatherConvertor.class})
@@ -34,7 +36,6 @@ public class MyWeather {
     @TypeConverters({SysConvertor.class})
     private Sys sys;
     private Integer timezone;
-    @PrimaryKey
     private Integer id;
     private String name;
     private Integer cod;
@@ -144,5 +145,13 @@ public class MyWeather {
 
     public void setCod(Integer cod) {
         this.cod = cod;
+    }
+
+    public long getIdRoom() {
+        return idRoom;
+    }
+
+    public void setIdRoom(long idRoom) {
+        this.idRoom = idRoom;
     }
 }

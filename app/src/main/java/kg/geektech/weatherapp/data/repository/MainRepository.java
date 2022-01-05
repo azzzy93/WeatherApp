@@ -1,5 +1,7 @@
 package kg.geektech.weatherapp.data.repository;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import javax.inject.Inject;
@@ -39,7 +41,12 @@ public class MainRepository {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
 
-                            myWeatherDao.insert(response.body());
+                            MyWeather myWeather = response.body();
+                            myWeather.setIdRoom(0);
+                            myWeatherDao.insert(myWeather);
+
+                            Log.d("Aziz", "MainWeather5 ID: " + myWeather.getIdRoom()
+                                    + " Name: " + myWeather.getName());
 
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));
@@ -65,7 +72,11 @@ public class MainRepository {
                         if (response.isSuccessful() && response.body() != null) {
                             liveData.setValue(Resource.success(response.body()));
 
-                            mainWeather5Dao.insert(response.body());
+                            MainWeather5 mainWeather5 = response.body();
+                            mainWeather5.setIdRoom(0);
+                            Log.d("Aziz", "MainWeather5 ID: " + mainWeather5.getIdRoom()
+                                    + " Name: " + mainWeather5.getCity().getName());
+                            mainWeather5Dao.insert(mainWeather5);
 
                         } else {
                             liveData.setValue(Resource.error(null, response.message()));

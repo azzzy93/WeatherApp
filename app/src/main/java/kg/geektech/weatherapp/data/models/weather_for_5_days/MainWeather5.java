@@ -11,7 +11,7 @@ import kg.geektech.weatherapp.data.local.room.convertors.weather5.ListConverter;
 @Entity
 public class MainWeather5 {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private long idRoom;
     private String cod;
     private Integer message;

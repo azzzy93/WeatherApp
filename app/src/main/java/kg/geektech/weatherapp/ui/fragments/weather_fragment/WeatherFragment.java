@@ -61,6 +61,7 @@ public class WeatherFragment extends Fragment implements LocationListener {
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
     private LocationManager locationManager;
+    private Boolean b = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -150,6 +151,11 @@ public class WeatherFragment extends Fragment implements LocationListener {
             getData();
         } else {
             Toast.makeText(requireContext(), "Интернет отключен", Toast.LENGTH_SHORT).show();
+            Log.d("Aziz", "MainWeather5Dao ID: " + mainWeather5Dao.getMainWeather5().getIdRoom()
+                    + " Name: " + mainWeather5Dao.getMainWeather5().getCity().getName());
+            Log.d("Aziz", "MyWeatherDao ID: " + myWeatherDao.getMyWeather().getIdRoom()
+                    + " Name: " + myWeatherDao.getMyWeather().getName());
+
             adapter.setList(mainWeather5Dao.getMainWeather5().getList());
             setDataView(myWeatherDao.getMyWeather());
         }
@@ -247,6 +253,8 @@ public class WeatherFragment extends Fragment implements LocationListener {
         binding.tvSunriseAm.setText(sunrise);
         binding.tvSunny.setText(weatherCurrent);
         binding.tvDaytimeHM.setText(daytime);
+
+        b = true;
     }
 
     private String getTime(Integer timeInt, String timeFormat, String gmt) {
@@ -274,11 +282,12 @@ public class WeatherFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Log.e("aziz", "Lat: " + location.getLatitude() + "\nLong : " + location.getLongitude());
 
-        if (getArguments() == null) {
+        if (!b) {
             viewModel.getWeathers(location.getLatitude(), location.getLongitude());
             getBroadcastReceiver();
+        } else {
+            Log.e("Aziz", "Lat: " + location.getLatitude() + "\nLong : " + location.getLongitude());
         }
     }
 }
